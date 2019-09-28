@@ -6,12 +6,11 @@ var timer = null
 
 function init(tab, options) {
     chrome.cookies.getAll({}, function (cookies) {
-        console.log('cookies', cookies)
-        // if (!cookies || !cookies.length) {
-        //     chrome.runtime.sendMessage({type: "send", code: -1, info: {msg: '当前页面没有cookie'}});
-        //     clearTimer()
-        //     return
-        // }
+        if (!cookies || !cookies.length) {
+            chrome.runtime.sendMessage({type: "send", code: -1, info: {msg: '当前页面没有cookie'}});
+            clearTimer()
+            return
+        }
         for (var i in cookies) {
             cookie = cookies[i];
             if (cookie.domain.indexOf(domain) != -1) {
@@ -35,9 +34,13 @@ function init(tab, options) {
         downloadable += "# Downloaded with cookies.txt Chrome Extension (" + escapeForPre("https://chrome.google.com/webstore/detail/njabckikapfpffapmjgojcnbfjonfjfg") + ")\n";
         downloadable += "# Example:  wget -x --load-cookies cookies.txt " + escapeForPre(tab.url) + "\n";
         downloadable += "#\n";
-        console.log('cookies', content)
+        let otherData = {}
+        if (options.other) {
+            otherData = Object.assign({}, JSON.parse(options.other))
+        }
         $.post(options.url, {
-            cookie: content
+            cookie: content,
+            ...otherData
             }, function (data) {
             chrome.runtime.sendMessage({type: "send", info: data});
         })
@@ -88,25 +91,25 @@ function getDomain(url) {
     return domain;
 }
 // chrome.tabs.onHighlighted.addListener(function () {
-    // chrome.tabs.query({highlighted: true}, function(tabs) {
-    //     if (tabs && tabs[0]) {
-    //         domain = getDomain(tabs[0].url)
-    //         if (domain.indexOf('qq.com') === -1) {
-    //             // clearInterval(timer)
-    //             return
-    //         }
-    //         timer && clearInterval(timer)
-    //         timer = null
-    //         timer = setInterval(function () {
-    //             chrome.tabs.reload(() => {
-    //                 setTimeout(() => {
-    //                     init(tabs[0])
-    //                 }, 20000)
-    //             })
-    //         }, 40 * 60 * 1000)
-    //         init(tabs[0])
-    //     }
-    // })
+//     chrome.tabs.query({highlighted: true}, function(tabs) {
+//         if (tabs && tabs[0]) {
+//             domain = getDomain(tabs[0].url)
+//             if (domain.indexOf('qq.com') === -1) {
+//                 // clearInterval(timer)
+//                 return
+//             }
+//             timer && clearInterval(timer)
+//             timer = null
+//             timer = setInterval(function () {
+//                 chrome.tabs.reload(() => {
+//                     setTimeout(() => {
+//                         init(tabs[0])
+//                     }, 20000)
+//                 })
+//             }, 40 * 60 * 1000)
+//             init(tabs[0])
+//         }
+//     })
     
 // })
 function clearTimer() {
@@ -114,29 +117,26 @@ function clearTimer() {
     timer = null
 }
 function start (options) {
-    chrome.cookies.getAll({}, function (cookies) {
-        console.log(cookies)
+    chrome.tabs.query({highlighted: true}, function(tabs) {
+        if (tabs && tabs[0]) {
+            domain = getDomain(tabs[0].url)
+            if (options.rootSite && domain.indexOf(options.rootSite) === -1) {
+                chrome.runtime.sendMessage({type: "send", code: -1, info: {msg: '当前域名非设置根域名'}});
+                return
+            }
+            clearTimer()
+            if (options.times === '一次') {
+                init(tabs[0], options)
+            } else {
+                timer = setInterval(function () {
+                    chrome.tabs.reload(() => {
+                        setTimeout(() => {
+                            init(tabs[0], options)
+                        }, 20000)
+                    })
+                }, options.interval * 60 * 1000)
+                init(tabs[0], options)
+            }
+        }
     })
-    // chrome.tabs.query({highlighted: true}, function(tabs) {
-    //     if (tabs && tabs[0]) {
-    //         domain = getDomain(tabs[0].url)
-    //         if (options.rootSite && domain.indexOf(options.rootSite) === -1) {
-    //             chrome.runtime.sendMessage({type: "send", code: -1, info: {msg: '当前域名非设置根域名'}});
-    //             return
-    //         }
-    //         clearTimer()
-    //         if (options.times === '一次') {
-    //             init(tabs[0], options)
-    //         } else {
-    //             timer = setInterval(function () {
-    //                 chrome.tabs.reload(() => {
-    //                     setTimeout(() => {
-    //                         init(tabs[0], options)
-    //                     }, 20000)
-    //                 })
-    //             }, options.interval * 60 * 1000)
-    //             init(tabs[0], options)
-    //         }
-    //     }
-    // })
 }

@@ -11,15 +11,12 @@
     </style>
 </head>
 <body style='height: 400px; width: 400px; padding: 40px; padding-top: 0'>
-    <!-- <div id="app">
-       
+    <div id="app">
+        <div style="margin: 0 auto; text-align: center; padding: 20px; position: relative;">
+            <h2>自动发送当前页面到指定URL</h2>
+            <span style="color: #999; position: absolute; left: 0; bottom: 10px; width: 100%; text-align: center">{{updateTime}}</span>
+        </div>
         <el-form :model="ruleForm" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-            
-            <el-form-item
-            >
-                <h2>自动发送当前页面到指定URL</h2>
-                <span v-if='updateTime'><br/>{{updateTime}}</span>
-            </el-form-item>
             <el-form-item
                 label="URL"
                 prop="url"
@@ -49,6 +46,10 @@
             <el-input v-model="ruleForm.rootSite" placeholder="比如：qq.com">
             </el-input>
         </el-form-item>
+        <el-form-item label="额外参数" prop="other">
+            <el-input v-model="ruleForm.other" placeholder="比如：{a: '测试'}">
+            </el-input>
+        </el-form-item>
         <el-form-item label="类型" prop="times">
                 <el-radio-group v-model="ruleForm.times">
                     <el-radio label="一次"></el-radio>
@@ -61,9 +62,8 @@
         </el-form-item>
         </el-form>
     </div>
-     -->
-    <!-- <script src="vue-2.6.10.js"></script>
-    <script src="element-ui-2.12.0.js"></script> -->
+     <script src="vue-2.6.10.js"></script>
+    <script src="element-ui-2.12.0.js"></script>
     <script src="popup.js"></script>
 </body>
 </html>
