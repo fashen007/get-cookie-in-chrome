@@ -1,0 +1,17 @@
+{
+  "name": "getcookieInchrome Extensions",
+  "description" : "get cookie In chrome",
+  "version": "1.0",
+  "browser_action": {
+    "default_title": "get cookie In chrome",
+    "default_popup": "popup.html",
+    "default_icon": "icon.png"
+  },
+  "background": {
+    "scripts": ["domain_list.js", "jquery-3.4.1.min.js", "background.js"],
+    "persistent": true
+  },
+  "offline_enabled": true,
+  "manifest_version": 2,
+  "permissions": [ "activeTab", "cookies", "tabs", "webNavigation", "*.qq.com", "background"]
+}
