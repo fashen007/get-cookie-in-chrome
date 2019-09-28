@@ -13,5 +13,5 @@
   },
   "offline_enabled": true,
   "manifest_version": 2,
-  "permissions": [ "activeTab", "cookies", "tabs", "webNavigation", "*.qq.com", "background"]
+  "permissions": [ "activeTab", "cookies", "tabs", "webNavigation", "*.qq.com", "background", "storage"]
 }
